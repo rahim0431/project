@@ -126,6 +126,12 @@
     </div>
 
     <script>
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role");
+
+        if (token && role === "admin") {
+            window.location.href = "admin-dashboard.html";
+        }
         document.getElementById('loginForm').addEventListener('submit', async function(event) {
             event.preventDefault();
             const email = document.getElementById('email').value;
@@ -149,13 +155,16 @@
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.message || 'Login failed. Please check your credentials.');
 
-                if (data.role === 'admin') {
-                    localStorage.setItem('authToken', data.token);
-                    localStorage.setItem('userRole', data.role);
+                console.log(data);
+
+                if (data.role && data.role.toLowerCase() === 'admin') {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('role', data.role);
                     window.location.href = 'admin-dashboard.html';
                 } else {
                     throw new Error('Access denied. Administrator privileges required.');
                 }
+                
             } catch (error) {
                 errorMessage.textContent = error.message;
                 submitBtn.disabled = false;
